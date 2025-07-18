@@ -1,23 +1,60 @@
----
-// src/components/NavBar.astro
----
-<header class="sticky top-0 z-50 bg-white shadow-md">
-  <nav class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-    <!-- Left Spacer -->
-    <div class="w-1/3"></div>
+<nav class="bg-white shadow-md sticky top-0 z-50">
+  <div class="w-full px-0"> <!-- Remove mx-auto and px to allow flush edges -->
+    <div class="flex items-center justify-between h-20 md:h-24 px-4 sm:px-6 lg:px-8">
+      
+      <!-- Left: Logo (flush left) -->
+      <div class="flex items-center">
+        <a href="/" class="block">
+          <img
+            src="/logo.jpg"
+            alt="Las Flores Jasmin Logo"
+            class="h-18 w-18 md:h-23 md:w-23 object-cover rounded-full shadow-md"
+          />
+        </a>
+      </div>
 
-    <!-- Logo Centered -->
-    <div class="w-1/3 text-center">
-      <a href="/" class="text-2xl font-bold text-rose-700 tracking-wide hover:text-rose-900 transition">
-        Las Flores Jasmin
-      </a>
+      <!-- Center: Site Name -->
+      <div class="flex-1 text-center">
+       <h1 class="text-2xl md:text-3xl font-extrabold text-pink-600">
+  Las Flores Jasmin
+</h1>
+
+      </div>
+
+      <!-- Right: Nav / Menu -->
+      <div class="flex items-center">
+        <!-- Hamburger (mobile) -->
+        <button
+          id="nav-toggle"
+          aria-label="Toggle menu"
+          class="md:hidden text-2xl text-gray-600 hover:text-pink-500 focus:outline-none focus:text-pink-500"
+        >
+          ☰
+        </button>
+
+        <!-- Desktop Links -->
+       <div class="hidden md:flex space-x-10 ml-4 text-lg md:text-xl">
+  <a href="/" class="nav-link">Home</a>
+  <a href="/about" class="nav-link">About</a>
+  <a href="/contact" class="nav-link">Contact</a>
+</div>
+
+      </div>
     </div>
 
-    <!-- Navigation Links -->
-    <div class="w-1/3 flex justify-end gap-6 text-sm sm:text-base">
-      <a href="/" class="text-gray-700 hover:text-rose-600 transition">Home</a>
-      <a href="/about" class="text-gray-700 hover:text-rose-600 transition">About</a>
-      <a href="/contact" class="text-gray-700 hover:text-rose-600 transition">Contact</a>
+    <!-- Mobile Dropdown -->
+    <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 mt-2 pb-4 px-4 text-lg">
+      <a href="/" class="block text-gray-700 hover:text-pink-500 transition">Home</a>
+      <a href="/about" class="block text-gray-700 hover:text-pink-500 transition">About</a>
+      <a href="/contact" class="block text-gray-700 hover:text-pink-500 transition">Contact</a>
     </div>
-  </nav>
-</header>
+  </div>
+
+  <script type="module">
+    const toggle = document.getElementById('nav-toggle');
+    const menu = document.getElementById('mobile-menu');
+    toggle.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+    });
+  </script>
+</nav>

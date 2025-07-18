@@ -23,7 +23,6 @@ try {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Las Flores Jasmin</title>
-    <meta name="description" content="Fresh floral beauty from Las Flores Jasmin" />
     <link rel="icon" href="/favicon.ico" />
   </head>
   <body class="font-sans bg-white text-gray-800">
@@ -31,97 +30,95 @@ try {
 
     <!-- Slideshow -->
     <div client:load>
-  <script type="module">
-    let current = 0;
-    const INTERVAL = 5000;
+      <script type="module">
+        let current = 0;
+        const INTERVAL = 5000;
 
-    const getSlideClass = (offset) => {
-      if (offset === 0) return 'z-20 scale-100 opacity-100 pointer-events-auto';
-      if (Math.abs(offset) === 1) return 'z-10 scale-90 opacity-80 pointer-events-none';
-      if (Math.abs(offset) === 2) return 'z-0 scale-75 opacity-50 pointer-events-none';
-      return 'opacity-0 scale-75 pointer-events-none';
-    };
+        const getSlideClass = (offset) => {
+          if (offset === 0) return 'z-20 scale-100 opacity-100 pointer-events-auto';
+          if (Math.abs(offset) === 1) return 'z-10 scale-90 opacity-80 pointer-events-none';
+          if (Math.abs(offset) === 2) return 'z-0 scale-75 opacity-50 pointer-events-none';
+          return 'opacity-0 scale-75 pointer-events-none';
+        };
 
-    function updateSlides() {
-      const slides = document.querySelectorAll('.insta-slide[data-type="image"]');
-      const total = slides.length;
+        function updateSlides() {
+          const slides = document.querySelectorAll('.insta-slide[data-type="image"]');
+          const total = slides.length;
 
-      slides.forEach((el, i) => {
-        const offset = (i - current + total) % total;
-        let relativeOffset = offset;
-        if (offset > total / 2) relativeOffset = relativeOffset - total;
+          slides.forEach((el, i) => {
+            const offset = (i - current + total) % total;
+            let relativeOffset = offset;
+            if (offset > total / 2) relativeOffset = relativeOffset - total;
 
-        const x = relativeOffset * 110;
-        el.style.transform = `translateX(${x}%)`;
+            const x = relativeOffset * 120;
+            el.style.transform = `translateX(${x}%)`;
 
-        el.className = `insta-slide absolute w-[22rem] h-[22rem] rounded-xl overflow-hidden bg-white shadow-md transition-all duration-700 ease-in-out`;
-        el.classList.add(...getSlideClass(relativeOffset).split(' '));
-      });
-    }
+            el.className = `insta-slide absolute w-[28rem] h-[28rem] rounded-xl overflow-hidden bg-white shadow-md transition-all duration-700 ease-in-out`;
+            el.classList.add(...getSlideClass(relativeOffset).split(' '));
+          });
+        }
 
-    function nextSlide() {
-      const slides = document.querySelectorAll('.insta-slide[data-type="image"]');
-      current = (current + 1) % slides.length;
-      updateSlides();
-    }
+        function nextSlide() {
+          const slides = document.querySelectorAll('.insta-slide[data-type="image"]');
+          current = (current + 1) % slides.length;
+          updateSlides();
+        }
 
-    function prevSlide() {
-      const slides = document.querySelectorAll('.insta-slide[data-type="image"]');
-      current = (current - 1 + slides.length) % slides.length;
-      updateSlides();
-    }
+        function prevSlide() {
+          const slides = document.querySelectorAll('.insta-slide[data-type="image"]');
+          current = (current - 1 + slides.length) % slides.length;
+          updateSlides();
+        }
 
-    let interval = setInterval(nextSlide, INTERVAL);
+        let interval = setInterval(nextSlide, INTERVAL);
 
-    window.addEventListener('load', () => {
-      updateSlides();
-      document.getElementById('next-btn').addEventListener('click', () => {
-        nextSlide();
-        clearInterval(interval);
-        interval = setInterval(nextSlide, INTERVAL);
-      });
+        window.addEventListener('load', () => {
+          updateSlides();
+          document.getElementById('next-btn').addEventListener('click', () => {
+            nextSlide();
+            clearInterval(interval);
+            interval = setInterval(nextSlide, INTERVAL);
+          });
 
-      document.getElementById('prev-btn').addEventListener('click', () => {
-        prevSlide();
-        clearInterval(interval);
-        interval = setInterval(nextSlide, INTERVAL);
-      });
-    });
-  </script>
+          document.getElementById('prev-btn').addEventListener('click', () => {
+            prevSlide();
+            clearInterval(interval);
+            interval = setInterval(nextSlide, INTERVAL);
+          });
+        });
+      </script>
 
-  <div class="relative w-full max-w-7xl mx-auto py-8 overflow-hidden">
-    <!-- Arrows -->
-    <button id="prev-btn" class="absolute left-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-30 hover:bg-gray-100">
-      ←
-    </button>
-    <button id="next-btn" class="absolute right-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-30 hover:bg-gray-100">
-      →
-    </button>
+      <div class="relative w-full max-w-7xl mx-auto py-8 overflow-hidden">
+        <!-- Arrows -->
+        <button id="prev-btn" class="absolute left-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-30 hover:bg-gray-100">
+          ←
+        </button>
+        <button id="next-btn" class="absolute right-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-30 hover:bg-gray-100">
+          →
+        </button>
 
-    <!-- Slide container -->
-    <div class="relative h-[30rem] flex items-center justify-center">
-      {posts
-        .filter(post => post.media_type === 'IMAGE' || post.media_type === 'CAROUSEL_ALBUM')
-        .map((post, i) => (
-          <a
-            href={post.permalink}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="insta-slide absolute transition-all duration-700 ease-in-out"
-            data-type="image"
-          >
-            <img
-              src={post.media_url}
-              alt={post.caption ?? 'Instagram post'}
-              class="w-full h-full object-cover"
-            />
-          </a>
-        ))}
+        <!-- Slide container -->
+        <div class="relative h-[36rem] flex items-center justify-center">
+          {posts
+            .filter(post => post.media_type === 'IMAGE' || post.media_type === 'CAROUSEL_ALBUM')
+            .map((post, i) => (
+              <a
+                href={post.permalink}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="insta-slide absolute transition-all duration-700 ease-in-out"
+                data-type="image"
+              >
+                <img
+                  src={post.media_url}
+                  alt={post.caption ?? 'Instagram post'}
+                  class="w-full h-full object-cover"
+                />
+              </a>
+            ))}
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
-
 
     <!-- Bouquet-style Cards -->
     <section class="w-full max-w-6xl mx-auto mt-12 px-4 grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
