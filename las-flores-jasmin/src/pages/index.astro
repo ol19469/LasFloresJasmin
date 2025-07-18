@@ -1,8 +1,6 @@
 ---
 import NavBar from '../components/NavBar.astro';
 import '../styles/global.css';
-import { useState, useEffect } from 'react';
-import { jsx } from 'astro/jsx-runtime';
 
 let posts = [];
 
@@ -19,7 +17,6 @@ try {
 }
 ---
 
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -32,37 +29,44 @@ try {
   <body class="font-sans bg-white text-gray-800">
     <NavBar />
 
-    <p class="text-center text-green-600 mt-6 text-sm">
-      ✅ Posts loaded: {posts.length}
-    </p>
-
-    <!-- Slideshow (Top 5) -->
-   <div client:load>
+    <!-- Slideshow -->
+    <div client:load>
   <script type="module">
     let current = 0;
     const INTERVAL = 5000;
 
+    const getSlideClass = (offset) => {
+      if (offset === 0) return 'z-20 scale-100 opacity-100 pointer-events-auto';
+      if (Math.abs(offset) === 1) return 'z-10 scale-90 opacity-80 pointer-events-none';
+      if (Math.abs(offset) === 2) return 'z-0 scale-75 opacity-50 pointer-events-none';
+      return 'opacity-0 scale-75 pointer-events-none';
+    };
+
     function updateSlides() {
-      const slides = document.querySelectorAll('.insta-slide');
+      const slides = document.querySelectorAll('.insta-slide[data-type="image"]');
+      const total = slides.length;
+
       slides.forEach((el, i) => {
-        const offset = i - current;
-        el.style.transform = `translateX(${offset * 100}%)`;
-        el.style.zIndex = -Math.abs(offset);
-        el.classList.toggle('scale-100', offset === 0);
-        el.classList.toggle('scale-75', offset !== 0);
-        el.classList.toggle('opacity-100', Math.abs(offset) <= 1);
-        el.classList.toggle('opacity-0', Math.abs(offset) > 1);
+        const offset = (i - current + total) % total;
+        let relativeOffset = offset;
+        if (offset > total / 2) relativeOffset = relativeOffset - total;
+
+        const x = relativeOffset * 110;
+        el.style.transform = `translateX(${x}%)`;
+
+        el.className = `insta-slide absolute w-[22rem] h-[22rem] rounded-xl overflow-hidden bg-white shadow-md transition-all duration-700 ease-in-out`;
+        el.classList.add(...getSlideClass(relativeOffset).split(' '));
       });
     }
 
     function nextSlide() {
-      const slides = document.querySelectorAll('.insta-slide');
+      const slides = document.querySelectorAll('.insta-slide[data-type="image"]');
       current = (current + 1) % slides.length;
       updateSlides();
     }
 
     function prevSlide() {
-      const slides = document.querySelectorAll('.insta-slide');
+      const slides = document.querySelectorAll('.insta-slide[data-type="image"]');
       current = (current - 1 + slides.length) % slides.length;
       updateSlides();
     }
@@ -71,7 +75,6 @@ try {
 
     window.addEventListener('load', () => {
       updateSlides();
-
       document.getElementById('next-btn').addEventListener('click', () => {
         nextSlide();
         clearInterval(interval);
@@ -86,40 +89,41 @@ try {
     });
   </script>
 
-  <div class="relative w-full max-w-5xl mx-auto py-8">
+  <div class="relative w-full max-w-7xl mx-auto py-8 overflow-hidden">
     <!-- Arrows -->
-    <button id="prev-btn" class="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-20 hover:bg-gray-100">
+    <button id="prev-btn" class="absolute left-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-30 hover:bg-gray-100">
       ←
     </button>
-    <button id="next-btn" class="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-20 hover:bg-gray-100">
+    <button id="next-btn" class="absolute right-6 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-30 hover:bg-gray-100">
       →
     </button>
 
-    <!-- Slides -->
-    <div class="overflow-hidden relative h-96">
-      <div class="flex transition-transform duration-500 ease-in-out">
-        {posts.slice(0, 5).map((post, i) => (
+    <!-- Slide container -->
+    <div class="relative h-[30rem] flex items-center justify-center">
+      {posts
+        .filter(post => post.media_type === 'IMAGE' || post.media_type === 'CAROUSEL_ALBUM')
+        .map((post, i) => (
           <a
             href={post.permalink}
             target="_blank"
             rel="noopener noreferrer"
-            class="insta-slide absolute top-0 left-0 w-full transition-all duration-700 ease-in-out scale-75 opacity-0"
+            class="insta-slide absolute transition-all duration-700 ease-in-out"
+            data-type="image"
           >
-            {post.media_type === 'IMAGE' || post.media_type === 'CAROUSEL_ALBUM' ? (
-              <img src={post.media_url} alt={post.caption ?? 'Instagram post'} class="w-full h-96 object-cover rounded-xl shadow" />
-            ) : post.media_type === 'VIDEO' ? (
-              <video src={post.media_url} controls muted class="w-full h-96 object-cover rounded-xl shadow" />
-            ) : null}
+            <img
+              src={post.media_url}
+              alt={post.caption ?? 'Instagram post'}
+              class="w-full h-full object-cover"
+            />
           </a>
         ))}
-      </div>
     </div>
   </div>
 </div>
 
 
 
-    <!-- Bouquet-style Cards (Remaining) -->
+    <!-- Bouquet-style Cards -->
     <section class="w-full max-w-6xl mx-auto mt-12 px-4 grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
       {posts.slice(5).map(post => (
         <a
@@ -136,11 +140,10 @@ try {
             />
           ) : post.media_type === 'VIDEO' ? (
             <video
-              class="w-full h-64 object-cover"
               src={post.media_url}
               controls
               muted
-              preload="metadata"
+              class="w-full h-64 object-cover"
             />
           ) : null}
           <div class="p-4">
