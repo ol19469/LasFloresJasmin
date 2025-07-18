@@ -12,3 +12,24 @@
 .nav-link:hover::after {
   @apply w-full;
 }
+@keyframes dividerExpand {
+  0% {
+    width: 0%;
+    transform: translateX(-50%);
+  }
+  100% {
+    width: 100%;
+    transform: translateX(-50%);
+  }
+}
+
+.divider-line {
+  width: 0%;
+  transform: translateX(-50%);
+  animation: none;
+  transition: width 0.5s ease;
+}
+
+.divider-line.animate {
+  animation: dividerExpand 1.2s ease-out forwards;
+}
