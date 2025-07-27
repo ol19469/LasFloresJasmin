@@ -152,3 +152,23 @@ input:focus,
 textarea:focus {
   box-shadow: 0 0 0 3px rgba(251, 207, 232, 0.4);
 }
+.contact-button {
+  background: linear-gradient(90deg, #ec4899 0%, #f472b6 100%);
+  color: #fff;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 1rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.15s, background 0.2s;
+  margin-top: 1rem;
+  display: inline-block;
+}
+.contact-button:hover,
+.contact-button:focus {
+  background: linear-gradient(90deg, #db2777 0%, #be185d 100%);
+  transform: scale(1.05);
+  outline: none;
+}
