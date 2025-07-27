@@ -82,9 +82,9 @@ import '../styles/global.css';
           messageDiv.className = "text-center mt-4 text-lg font-semibold text-green-600";
           form.reset();
         } else {
-          const errorText = await response.text();
-          messageDiv.textContent = "There was an error sending your message. Please try again.";
-          messageDiv.className = "text-center mt-4 text-lg font-semibold text-red-600";
+         const errorText = await response.text();
+         messageDiv.textContent = "Error: " + errorText;
+         messageDiv.className = "text-center mt-4 text-lg font-semibold text-red-600";
         }
       });
     </script>

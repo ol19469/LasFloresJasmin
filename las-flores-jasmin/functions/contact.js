@@ -7,6 +7,10 @@ export async function onRequestPost(context) {
 
     const RESEND_API_KEY = context.env.RESEND_API_KEY;
 
+    if (!RESEND_API_KEY) {
+      return new Response("Missing RESEND_API_KEY", { status: 500 });
+    }
+
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -14,7 +18,7 @@ export async function onRequestPost(context) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "onboarding@resend.dev", // must be a verified sender
+        from: "onboarding@resend.dev",
         to: "ol19469@gmail.com",
         subject: `New Contact Form Submission from ${name}`,
         html: `
@@ -28,18 +32,13 @@ export async function onRequestPost(context) {
     const data = await res.json();
 
     if (!res.ok) {
-      console.error("Resend API error:", data);
-      return new Response(
-        `Failed to send message: ${data.message || "Unknown error"}`,
-        {
-          status: 500,
-        }
-      );
+      return new Response(`Resend error: ${JSON.stringify(data)}`, {
+        status: 500,
+      });
     }
 
     return new Response("Message sent!", { status: 200 });
   } catch (err) {
-    console.error("Server error:", err);
-    return new Response("Server error", { status: 500 });
+    return new Response("Server error: " + err.message, { status: 500 });
   }
 }
