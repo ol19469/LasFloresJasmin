@@ -141,13 +141,20 @@ const gridPosts = posts.slice(5);
 
     <!-- Contact Section -->
     <section class="max-w-4xl mx-auto px-4 text-center mt-4 mb-16">
-      <h3 class="text-xl md:text-2xl font-semibold text-pink-600 mb-2">Get in Touch</h3>
+      <h3 class="text-xl md:text-2xl font-semibold text-pink-600 mb-2">
+        Get in Touch <span aria-label="bouquet" role="img">💐</span>
+      </h3>
       <p class="text-lg text-gray-700">
-        Have a question or want to place an order? Call or text me any time:
+        Have a question or want to place an order? Call, text, or email me any time:
       </p>
-      <a href="tel:+8476125745" class="inline-block mt-3 text-pink-600 text-xl font-bold underline hover:text-pink-800 transition">
-        (847) 612-5745
-      </a>
+      <div class="flex flex-col items-center gap-2 mt-3">
+        <a href="tel:+8476125745" class="inline-block text-pink-600 text-xl font-bold underline hover:text-pink-800 transition">
+          <span aria-label="phone" role="img">📞</span> (847) 612-5745
+        </a>
+        <a href="mailto:jasmincarrera12@gmail.com" class="inline-block text-pink-600 text-xl font-bold underline hover:text-pink-800 transition">
+          <span aria-label="email" role="img">📧</span> jasmincarrera12@gmail.com
+        </a>
+      </div>
     </section>
 
     <!-- Divider -->
