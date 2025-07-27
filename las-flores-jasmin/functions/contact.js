@@ -19,7 +19,7 @@ export async function onRequestPost(context) {
       },
       body: JSON.stringify({
         from: "Las Flores Jasmin <hello@lasfloresjasmin.com>",
-        to: "ol19469@gmail.com",
+        to: "jasmincarrera12@gmail.com",
         subject: `New Contact Form Submission from ${name}`,
         html: `
             <p><strong>Name:</strong> ${name}</p>
