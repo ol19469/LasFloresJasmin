@@ -1,7 +1,6 @@
 ---
 import NavBar from '../components/NavBar.astro';
 import '../styles/global.css';
-import '../styles/global.css';
 ---
 
 <!DOCTYPE html>
@@ -28,7 +27,8 @@ import '../styles/global.css';
           <input
             type="text"
             name="name"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500"
+            placeholder="Your name"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white"
             required
           />
         </div>
@@ -38,7 +38,8 @@ import '../styles/global.css';
           <input
             type="email"
             name="email"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500"
+            placeholder="you@example.com"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white"
             required
           />
         </div>
@@ -48,20 +49,38 @@ import '../styles/global.css';
           <textarea
             rows="5"
             name="message"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500"
+            placeholder="Write your message here..."
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white"
             required
           ></textarea>
         </div>
 
-        <button
-          type="submit"
-          class="contact-button"
-        >
+        <button type="submit" class="contact-button">
           Send Message
         </button>
       </form>
+
       <div id="form-message" class="text-center mt-4 text-lg font-semibold"></div>
+
+      <!-- Divider -->
+     <div class="relative w-full h-1 my-12 overflow-hidden">
+      <div class="divider-line absolute left-1/2 top-0 h-full bg-pink-300 rounded-full"></div>
+    </div>
+
+      <!-- Location Map -->
+      <section class="mt-12">
+        <h2 class="text-2xl font-bold text-pink-600 mb-4 text-center">
+          Proudly Serving Bellwood, IL
+        </h2>
+        <p class="text-center text-gray-600 mb-6">
+          We’re based in Bellwood and offer floral delivery and custom arrangements throughout the surrounding area.
+        </p>
+        <div class="fade-in visible w-full aspect-video max-w-4xl mx-auto rounded-xl overflow-hidden shadow-md">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11882.054195996048!2d-87.8791306!3d41.88181145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x880e4ac19095ff81%3A0xc4eda8ba5213943!2sBellwood%2C%20IL!5e0!3m2!1sen!2sus!4v1753759411458!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </section>
     </main>
+
     <script>
       const form = document.querySelector('form[action="/contact"]');
       const messageDiv = document.getElementById('form-message');
@@ -82,11 +101,13 @@ import '../styles/global.css';
           messageDiv.className = "text-center mt-4 text-lg font-semibold text-green-600";
           form.reset();
         } else {
-         const errorText = await response.text();
-         messageDiv.textContent = "Error: " + errorText;
-         messageDiv.className = "text-center mt-4 text-lg font-semibold text-red-600";
+          const errorText = await response.text();
+          messageDiv.textContent = "Error: " + errorText;
+          messageDiv.className = "text-center mt-4 text-lg font-semibold text-red-600";
         }
       });
     </script>
+    <script src="/loadAnimations.js" is:inline></script>
+
   </body>
 </html>
