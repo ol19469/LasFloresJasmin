@@ -2,13 +2,13 @@
 import type { APIRoute } from "astro";
 
 export const prerender = false;
-export const runtime = "edge";
+export const runtime = "edge"; // Cloudflare Pages/Workers friendly
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     const form = await request.formData();
 
-    // Honeypot
+    // Honeypot: bots fill hidden fields
     if ((form.get("phone_number") ?? "").toString().trim() !== "") {
       return new Response("Spam detected", { status: 400 });
     }
@@ -20,13 +20,11 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response("Missing required fields", { status: 400 });
     }
 
-    // reCAPTCHA v2 (Invisible)
+    // Verify reCAPTCHA (Invisible v2)
     const token = (form.get("g-recaptcha-response") ?? "").toString();
-    if (!token) return new Response("Missing CAPTCHA token", { status: 400 });
-
-    const SECRET = import.meta.env.RECAPTCHA_SECRET;
-    if (!SECRET)
-      return new Response("Server misconfigured: RECAPTCHA_SECRET", {
+    const secret = import.meta.env.RECAPTCHA_SECRET;
+    if (!secret)
+      return new Response("Server misconfigured: RECAPTCHA_SECRET not set", {
         status: 500,
       });
 
@@ -35,7 +33,7 @@ export const POST: APIRoute = async ({ request }) => {
       {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ secret: SECRET, response: token }),
+        body: new URLSearchParams({ secret, response: token }),
       }
     );
     const verify = await verifyRes.json();
@@ -43,42 +41,43 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response("Failed CAPTCHA verification", { status: 400 });
     }
 
-    // Send email via Resend REST (edge-friendly)
-    const RESEND_API_KEY = import.meta.env.RESEND_API_KEY;
-    const RESEND_FROM =
-      import.meta.env.RESEND_FROM ||
-      "Las Flores Jasmin <contact@yourdomain.com>";
-    const RESEND_TO = import.meta.env.RESEND_TO || "you@yourdomain.com";
-    if (!RESEND_API_KEY) {
-      return new Response("Server misconfigured: RESEND_API_KEY", {
+    // Build email using env vars
+    const apiKey = import.meta.env.RESEND_API_KEY;
+    if (!apiKey)
+      return new Response("Server misconfigured: RESEND_API_KEY not set", {
         status: 500,
       });
-    }
+
+    const from =
+      import.meta.env.RESEND_FROM ||
+      "Las Flores Jasmin <hello@lasfloresjasmin.com>";
+    const to = import.meta.env.RESEND_TO || "jasmincarrera12@gmail.com";
 
     const payload = {
-      from: RESEND_FROM,
-      to: [RESEND_TO],
+      from,
+      to: [to],
       reply_to: email,
       subject: `New contact from ${name}`,
       text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
     };
 
+    // Call Resend REST API (edge-safe)
     const r = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
     });
 
     if (!r.ok) {
-      const t = await r.text();
-      return new Response(`Email error: ${t}`, { status: 502 });
+      const err = await r.text();
+      return new Response(`Email error: ${err}`, { status: 502 });
     }
 
     return new Response("OK", { status: 200 });
-  } catch {
+  } catch (e) {
     return new Response("Unexpected server error", { status: 500 });
   }
 };
