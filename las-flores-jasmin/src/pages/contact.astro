@@ -21,7 +21,7 @@ import '../styles/global.css';
         We'd love to hear from you! Fill out the form below and we'll be in touch soon.
       </p>
 
-      <form action="/contact" method="POST" class="space-y-6">
+      <form id="contactForm" action="/contact" method="POST" class="space-y-6" novalidate>
         <div>
           <label class="block mb-2 text-sm font-medium text-gray-700">Name</label>
           <input
@@ -55,7 +55,26 @@ import '../styles/global.css';
           ></textarea>
         </div>
 
-        <button type="submit" class="contact-button">
+        <!-- Honeypot: bots often fill this, humans never see it -->
+        <input
+          type="text"
+          name="phone_number"
+          tabindex="-1"
+          autocomplete="off"
+          aria-hidden="true"
+          style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;"
+        />
+
+        <!-- Invisible reCAPTCHA button -->
+        <button
+          id="sendBtn"
+          class="contact-button g-recaptcha"
+          data-sitekey="YOUR_RECAPTCHA_SITE_KEY"
+          data-callback="onRecaptcha"
+          data-size="invisible"
+          data-action="submit"
+          type="button"
+        >
           Send Message
         </button>
       </form>
@@ -92,32 +111,50 @@ import '../styles/global.css';
       </section>
     </main>
 
-    <!-- Email submission handler -->
-    <script>
-      const form = document.querySelector('form[action="/contact"]');
+     <script>
+      const form = document.getElementById('contactForm');
+      const btn  = document.getElementById('sendBtn');
       const messageDiv = document.getElementById('form-message');
 
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        messageDiv.textContent = "Sending...";
-        messageDiv.className = "text-center mt-4 text-lg font-semibold text-gray-500";
+      // Called by Google when CAPTCHA finishes
+      async function onRecaptcha(token) {
+        try {
+          messageDiv.textContent = "Sending...";
+          messageDiv.className = "text-center mt-4 text-lg font-semibold text-gray-500";
 
-        const formData = new FormData(form);
-        const response = await fetch(form.action, {
-          method: "POST",
-          body: formData,
-        });
+          const formData = new FormData(form);
+          // Ensure the token is sent even if Google didn't auto-insert the hidden input yet
+          formData.set('g-recaptcha-response', token);
 
-        if (response.ok) {
-          messageDiv.textContent = "Message sent! Thank you for contacting us.";
-          messageDiv.className = "text-center mt-4 text-lg font-semibold text-green-600";
-          form.reset();
-        } else {
-          const errorText = await response.text();
-          messageDiv.textContent = "Error: " + errorText;
+          const response = await fetch(form.action, {
+            method: "POST",
+            body: formData,
+          });
+
+          if (response.ok) {
+            messageDiv.textContent = "Message sent! Thank you for contacting us.";
+            messageDiv.className = "text-center mt-4 text-lg font-semibold text-green-600";
+            form.reset();
+            grecaptcha.reset(); // reset invisible widget
+          } else {
+            const errorText = await response.text();
+            messageDiv.textContent = "Error: " + errorText;
+            messageDiv.className = "text-center mt-4 text-lg font-semibold text-red-600";
+            grecaptcha.reset();
+          }
+        } catch (err) {
+          messageDiv.textContent = "Error sending message.";
           messageDiv.className = "text-center mt-4 text-lg font-semibold text-red-600";
+          grecaptcha.reset();
         }
+      }
+
+      // Bind the button to trigger the invisible CAPTCHA
+      btn.addEventListener('click', () => {
+        grecaptcha.execute();
       });
+
+      // Keep your divider animation init
     </script>
 
     <!-- Load fade-in + divider animations -->
