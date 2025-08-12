@@ -11,6 +11,7 @@ import '../styles/global.css';
     <title>Contact | Las Flores Jasmin</title>
     <meta name="description" content="Get in touch with Las Flores Jasmin" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   </head>
   <body class="font-sans bg-white text-gray-800">
     <NavBar />
@@ -21,7 +22,7 @@ import '../styles/global.css';
         We'd love to hear from you! Fill out the form below and we'll be in touch soon.
       </p>
 
-      <form id="contactForm" action="/contact" method="POST" class="space-y-6" novalidate>
+      <form id="contactForm" action="/api/contact" method="POST" class="space-y-6" novalidate>
         <div>
           <label class="block mb-2 text-sm font-medium text-gray-700">Name</label>
           <input
